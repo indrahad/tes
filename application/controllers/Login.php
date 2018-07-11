@@ -1,41 +1,50 @@
 <?php
 class Login extends CI_Controller{
 
-function __construct(){
-  parent::__construct(); 
-  $this->load->model('m_login');
-}
+  function __construct(){
+    parent::__construct(); 
+    $this->load->model('m_login');
+  }
 
-function index(){
-  $this->load->view('v_login');
-}
+  function index(){
+    // cek login
+    if ($this->session->userdata('status') == 'login') {
+      redirect(base_url("index.php/admin"));
+      
+    }
+    $this->load->view('v_login');
+  }
 
-function aksi_login(){
-  $username = $this->input->post('username');
-  $password = $this->input->post('password');
-  $where = array(
-  'username' => $username,
-  'password' => md5($password)
- );
- $cek = $this->m_login->cek_login("admin",$where)->num_rows();
- if($cek > 0){
+  function login2(){
+    $this->load->view('v_login2');
+  }
 
-$data_session = array(
-  'nama' => $username,
-  'status' => "login"
- );
+  function aksi_login(){
+    $username = $this->input->post('username');
+    $password = $this->input->post('password');
+    $where = array(
+      'username' => $username,
+      'password' => md5($password)
+      );
+    $cek = $this->m_login->cek_login("admin",$where)->num_rows();
+    if($cek > 0){
 
-$this->session->set_userdata($data_session);
+      $data_session = array(
+        'nama' => $username,
+        'status' => "login"
+        );
 
-redirect(base_url("index.php/admin"));
+      $this->session->set_userdata($data_session);
 
-}else{
- echo "Data Login Salah!";
-}
-}
+      redirect(base_url("index.php/admin"));
 
-function logout(){
-  $this->session->sess_destroy();
-  redirect(base_url('index.php/login'));
+    }else{
+     echo "Data Login Salah!";
+   }
  }
+
+ function logout(){
+  $this->session->sess_destroy();
+  redirect(base_url('index.php/login/index'));
+}
 }
